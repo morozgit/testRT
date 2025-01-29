@@ -3,6 +3,9 @@ import pika
 import httpx
 import asyncio
 
+SSL_CERTFILE = "../certs/localhost.crt"
+SSL_KEYFILE = "../certs/localhost.key"
+
 
 async def process_task(task_data):
     task_id = task_data.get("task_id")
@@ -28,10 +31,13 @@ async def process_task(task_data):
     print(f"Обработка задачи {task_id} для оборудования {equipment_id}")
     print(f"Отправляемый JSON: {json.dumps(request_body, indent=2)}")
 
-    url = f"http://127.0.0.1:8001/api/v1/equipment/cpe/{equipment_id}?timeoutInSeconds={timeout_in_seconds}"
+    url = f"https://localhost:443/api/v1/equipment/cpe/{equipment_id}?timeoutInSeconds={timeout_in_seconds}"
 
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(
+            verify=SSL_CERTFILE,
+            cert=(SSL_CERTFILE, SSL_KEYFILE)
+        ) as client:
             response = await client.post(url, json=request_body, timeout=timeout_in_seconds)
 
             task_status = "success" if response.status_code == 200 else f"Ошибка: {response.status_code}, {response.text}"
@@ -46,6 +52,7 @@ async def process_task(task_data):
         task_status = f"Ошибка: {str(e)}"
 
     return task_id, task_status
+
 
 async def handle_message(ch, body):
     try:
