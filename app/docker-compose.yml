@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  service_a:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.a
+    ports:
+      - "8001:8001"
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+
+  service_b:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.b
+    ports:
+      - "8002:8002"
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+
+  rabbitmq:
+    image: "rabbitmq:management"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
