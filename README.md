@@ -5,7 +5,7 @@
    git clone https://github.com/morozgit/testRT.git
    ```
 
-1. ** Создайте SSL сертификат и ключ  в директории certs/ **
+1. **Создайте SSL сертификат и ключ  в директории certs/**
    ```bash
    openssl genpkey -algorithm RSA -out localhost.key -pkeyopt rsa_keygen_bits:2048
 
